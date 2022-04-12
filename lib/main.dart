@@ -1,24 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_school_information/pages/main_page.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_school_information/provider/theme_provider.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
 
-import 'pages/home_page.dart';
+import 'app.dart';
 
 void main() {
-  runApp(const MyApp());
-}
+  // * make sure widgets is initialized
+  WidgetsFlutterBinding.ensureInitialized();
+  // * prevent device orientation changes and force portrait
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitDown,
+    DeviceOrientation.portraitUp,
+  ]).then((_) async {
+    // * init database
+    await Hive.initFlutter();
+    await Hive.openBox('common_box');
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'School Information',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (context) => ThemeProvider(),
+          ),
+        ],
+        child: const MyApp(),
       ),
-      home: const MainPage(),
     );
-  }
+  });
 }

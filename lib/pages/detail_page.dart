@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_school_information/models/school.dart';
+import 'package:flutter_school_information/pages/google_map_page.dart';
 
 class DetailPage extends StatefulWidget {
-  const DetailPage({Key? key, this.data}) : super(key: key);
+  const DetailPage({Key? key, required this.data}) : super(key: key);
 
-  final data;
+  final School data;
 
   @override
   State<DetailPage> createState() => _DetailPageState();
@@ -26,40 +28,28 @@ class _DetailPageState extends State<DetailPage> {
                 StretchMode.blurBackground,
                 StretchMode.fadeTitle
               ],
-              title: Text(data["E"]),
+              title: Text(data.e ?? 'Title'),
               background: const FlutterLogo(),
             ),
           ),
           SliverList(
-            delegate: SliverChildListDelegate(
-              [
-                Text(data["A"], style: TextStyle(fontSize: 30)),
-                Text(data["B"], style: TextStyle(fontSize: 30)),
-                Text(data["C"], style: TextStyle(fontSize: 30)),
-                Text(data["D"], style: TextStyle(fontSize: 30)),
-                Text(data["E"], style: TextStyle(fontSize: 30)),
-                Text(data["F"], style: TextStyle(fontSize: 30)),
-                Text(data["G"], style: TextStyle(fontSize: 30)),
-                Text(data["H"], style: TextStyle(fontSize: 30)),
-                Text(data["I"], style: TextStyle(fontSize: 30)),
-                Text(data["J"], style: TextStyle(fontSize: 30)),
-                Text(data["K"], style: TextStyle(fontSize: 30)),
-                Text(data["L"], style: TextStyle(fontSize: 30)),
-                Text(data["M"], style: TextStyle(fontSize: 30)),
-                Text(data["N"], style: TextStyle(fontSize: 30)),
-                Text(data["O"], style: TextStyle(fontSize: 30)),
-                Text(data["P"], style: TextStyle(fontSize: 30)),
-                Text(data["Q"], style: TextStyle(fontSize: 30)),
-                Text(data["R"], style: TextStyle(fontSize: 30)),
-                Text(data["S"], style: TextStyle(fontSize: 30)),
-                Text(data["T"], style: TextStyle(fontSize: 30)),
-                Text(data["U"], style: TextStyle(fontSize: 30)),
-                Text(data["V"], style: TextStyle(fontSize: 30)),
-                Text(data["W"], style: TextStyle(fontSize: 30)),
-                Text(data["X"], style: TextStyle(fontSize: 30)),
-                Text(data["Y"], style: TextStyle(fontSize: 30)),
-              ],
-            ),
+            delegate: SliverChildListDelegate([
+              Text(data.g ?? '其他'),
+              (data.j != null && data.h != null)
+                  ? ElevatedButton(
+                      onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: ((context) => GoogleMapPage(
+                                    id: 'id',
+                                    latitude: double.parse(data.j ?? '1234'),
+                                    longitude: double.parse(data.h ?? '234'),
+                                  )),
+                            ),
+                          ),
+                      child: const Text('Button'))
+                  : Container()
+            ]),
           )
         ],
       ),

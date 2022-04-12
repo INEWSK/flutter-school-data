@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_school_information/components/bottom_bar.dart';
 
+import '../components/bottom_tab_bar.dart';
 import 'home_page.dart';
 import 'search_page.dart';
 import 'setting_page.dart';
@@ -16,11 +16,7 @@ class _MainPageState extends State<MainPage> {
   final _pageController = PageController();
   int _currentIndex = 0;
 
-  final _screens = [
-    HomePage(),
-    SearchPage(),
-    SettingPage(),
-  ];
+  final _screens = [const HomePage(), SearchPage(), SettingPage()];
 
   @override
   void dispose() {
