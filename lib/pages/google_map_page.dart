@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GoogleMapPage extends StatefulWidget {
@@ -30,13 +31,6 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
   //   controller.animateCamera(CameraUpdate.newCameraPosition(_position));
   // }
 
-  @override
-  void initState() {
-    super.initState();
-    // setup marker
-    _setMarker(_hongKong);
-  }
-
   void _setMarker(LatLng position) {
     final Marker marker = Marker(
         markerId: MarkerId('id'),
@@ -52,19 +46,37 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
   Widget build(BuildContext context) {
     final _position = LatLng(widget.latitude, widget.longitude);
     return Scaffold(
-      body: GoogleMap(
-        mapType: MapType.normal,
-        initialCameraPosition: CameraPosition(target: _hongKong, zoom: 12),
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
-        markers: Set<Marker>.of(_markers.values),
+      body: Stack(
+        children: [
+          GoogleMap(
+            zoomControlsEnabled: false,
+            mapType: MapType.normal,
+            initialCameraPosition: CameraPosition(target: _position, zoom: 15),
+            onMapCreated: (GoogleMapController controller) {
+              _controller.complete(controller);
+              _setMarker(_position);
+            },
+            markers: Set<Marker>.of(_markers.values),
+          ),
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: FloatingActionButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Icon(Icons.arrow_back),
+                ),
+              ),
+            ),
+          )
+        ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
-        label: const Text('Locate'),
-        icon: const Icon(Icons.location_on),
-      ),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   onPressed: () {},
+      //   label: const Text('Locate'),
+      //   icon: const Icon(Icons.location_on),
+      // ),
     );
   }
 }

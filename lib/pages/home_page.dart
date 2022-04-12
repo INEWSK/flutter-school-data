@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage>
       future: _fetchData(),
       builder: ((context, snapshot) {
         if (snapshot.hasData) {
-          if (snapshot.data == false) {}
+          // if (snapshot.data == false) {}
           final data = snapshot.data as List<School>;
           // * building list view
           return ListView.builder(

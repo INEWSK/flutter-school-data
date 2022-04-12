@@ -35,6 +35,13 @@ class _DetailPageState extends State<DetailPage> {
           SliverList(
             delegate: SliverChildListDelegate([
               Text(data.g ?? '其他'),
+              Text(data.a ?? '123'),
+              Text(data.b ?? '123'),
+              Text(data.c ?? '123'),
+              Text(data.e ?? '123'),
+              Text(data.f ?? '123'),
+              Text(data.g ?? '123'),
+              Text(data.h ?? '123'),
               (data.j != null && data.h != null)
                   ? ElevatedButton(
                       onPressed: () => Navigator.push(
