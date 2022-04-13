@@ -7,6 +7,8 @@ import 'provider/theme_provider.dart';
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  //TESTING
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
