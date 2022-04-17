@@ -28,20 +28,20 @@ class _DetailPageState extends State<DetailPage> {
                 StretchMode.blurBackground,
                 StretchMode.fadeTitle
               ],
-              title: Text(data.e ?? 'Title'),
+              title: Text(data.e!),
               background: const FlutterLogo(),
             ),
           ),
           SliverList(
             delegate: SliverChildListDelegate([
-              Text(data.g ?? '其他'),
-              Text(data.a ?? '123'),
-              Text(data.b ?? '123'),
-              Text(data.c ?? '123'),
-              Text(data.e ?? '123'),
-              Text(data.f ?? '123'),
-              Text(data.g ?? '123'),
-              Text(data.h ?? '123'),
+              Text(data.g!),
+              Text(data.a!),
+              Text(data.b!),
+              Text(data.c!),
+              Text(data.e!),
+              Text(data.f!),
+              Text(data.g!),
+              Text(data.h!),
               (data.j != null && data.h != null)
                   ? ElevatedButton(
                       onPressed: () => Navigator.push(
@@ -49,12 +49,12 @@ class _DetailPageState extends State<DetailPage> {
                             MaterialPageRoute(
                               builder: ((context) => GoogleMapPage(
                                     id: 'id',
-                                    latitude: double.parse(data.j ?? '1234'),
-                                    longitude: double.parse(data.h ?? '234'),
+                                    latitude: double.parse(data.j!),
+                                    longitude: double.parse(data.h!),
                                   )),
                             ),
                           ),
-                      child: const Text('Button'))
+                      child: const Text('Google Map'))
                   : Container()
             ]),
           )

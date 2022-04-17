@@ -5,8 +5,11 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_school_information/common/utils/hive_utils.dart';
 import 'package:flutter_school_information/models/school.dart';
 import 'package:flutter_school_information/pages/detail_page.dart';
+import 'package:hive/hive.dart';
 import 'package:shimmer/shimmer.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,23 +21,49 @@ class HomePage extends StatefulWidget {
 
 // * method of fetch data from url
 Future _fetchData() async {
-  var connect = await (Connectivity().checkConnectivity());
-
-  if (connect == ConnectivityResult.none) {
-    return Future.error("Network unavailable");
-  }
-
   const path = 'assets/json/SCH_LOC_EDB.json';
   const url =
       'https://www.edb.gov.hk/attachment/en/student-parents/sch-info/sch-search/sch-location-info/SCH_LOC_EDB.json';
+  // * init hive utils
+  var hiveUtils = HiveUtils();
+  // * check connect status
+  var connect = await (Connectivity().checkConnectivity());
+
+  const String boxName = 'school_data';
+
+  if (connect == ConnectivityResult.none) {
+    try {
+      // * if network unavailable, check for local data
+      bool exist = await hiveUtils.isExists(boxName: boxName);
+      if (exist) {
+        List list = await hiveUtils.getBoxes<School>(boxName);
+        return list;
+      }
+    } catch (e) {
+      // * no local data, and no network
+      return Future.error('Network unavailable, please check your network');
+    }
+  }
 
   try {
-    final String response = await rootBundle.loadString(path);
+    var response = await rootBundle.loadString(path);
+
     final data = List<School>.from(
       json.decode(response).map((i) => School.fromMap(i)),
     );
-    return data;
+
+    // * clear exist data
+    var box = await Hive.openBox('school_data');
+    await box.clear();
+    // * store new data into box (database);
+    await HiveUtils().addBoxes(data, 'school_data');
+    // * pickup data from box
+    List list = await HiveUtils().getBoxes<School>('school_data');
+    // * remove first item
+    list.removeAt(0);
+    return list;
   } catch (e) {
+    log(e.toString());
     return Future.error("Unable to fetch API");
   }
 }
@@ -45,30 +74,38 @@ class _HomePageState extends State<HomePage>
   @override
   bool get wantKeepAlive => true;
 
+  // * list view widget
   Widget _listView() {
     return FutureBuilder(
       future: _fetchData(),
       builder: ((context, snapshot) {
         if (snapshot.hasData) {
-          // if (snapshot.data == false) {}
           final data = snapshot.data as List<School>;
-          // * building list view
-          return ListView.builder(
-            itemCount: data.length - 1, // skip first key
-            itemBuilder: ((context, index) {
-              return ListTile(
-                title: Text(data[index + 1].e ?? '標題'),
-                subtitle: Text(data[index + 1].g ?? '副標題'),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DetailPage(
-                      data: data[index + 1],
+          return EasyRefresh(
+            // * building list view
+            child: ListView.builder(
+              itemCount: data.length, // skip first key
+              itemBuilder: ((context, index) {
+                return ListTile(
+                  title: Text(data[index].e!),
+                  subtitle: Text(data[index].g!),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailPage(
+                        data: data[index],
+                      ),
                     ),
                   ),
-                ),
-              );
-            }),
+                );
+              }),
+            ),
+            // * pull to refresh and fetch API again
+            onRefresh: () async {
+              setState(() {
+                _fetchData();
+              });
+            },
           );
         } else if (snapshot.hasError) {
           // * show error page and retry button
@@ -81,7 +118,7 @@ class _HomePageState extends State<HomePage>
               const SizedBox(height: 10),
               ElevatedButton.icon(
                 onPressed: () {
-                  // * reload whole list view widget (bad )
+                  // * reload whole list view widget
                   setState(() {
                     _listView();
                   });
@@ -99,6 +136,7 @@ class _HomePageState extends State<HomePage>
     );
   }
 
+  // * loading effect
   Widget _shimmer() {
     return Shimmer.fromColors(
       baseColor: (Colors.grey[300])!,

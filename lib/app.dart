@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_school_information/pages/onborading_page.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
 import 'pages/main_page.dart';
@@ -9,6 +11,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var box = Hive.box('common_box');
+    // box.clear();
+    bool seen = box.get('seen') ?? false;
     return Consumer<ThemeProvider>(
       builder: (_, ThemeProvider provider, __) {
         return MaterialApp(
@@ -16,7 +21,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(brightness: Brightness.light),
           darkTheme: ThemeData(brightness: Brightness.dark),
           themeMode: provider.getTheme(),
-          home: const MainPage(),
+          home: seen ? const MainPage() : const OnBoardingPage(),
         );
       },
     );

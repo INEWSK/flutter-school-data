@@ -1,40 +1,77 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
+import 'package:hive/hive.dart';
 
-class School {
+part 'school.g.dart';
+
+@HiveType(typeId: 1)
+class School extends HiveObject {
+  @HiveField(0)
   String? a;
+  @HiveField(1)
   String? b;
+  @HiveField(2)
   String? c;
+  @HiveField(3)
   String? d;
+  @HiveField(4)
   String? e;
+  @HiveField(5)
   String? f;
+  @HiveField(6)
   String? g;
+  @HiveField(7)
   String? h;
+  @HiveField(8)
   String? i;
+  @HiveField(9)
   String? j;
+  @HiveField(10)
   String? k;
+  @HiveField(11)
   String? l;
+  @HiveField(12)
   String? m;
+  @HiveField(13)
   String? n;
+  @HiveField(14)
   String? o;
+  @HiveField(15)
   String? p;
+  @HiveField(16)
   String? q;
+  @HiveField(17)
   String? r;
+  @HiveField(18)
   String? s;
+  @HiveField(19)
   String? t;
+  @HiveField(20)
   String? u;
+  @HiveField(21)
   String? v;
+  @HiveField(22)
   String? w;
+  @HiveField(23)
   String? x;
+  @HiveField(24)
   String? y;
+  @HiveField(25)
   String? z;
+  @HiveField(26)
   String? aa;
+  @HiveField(27)
   String? ab;
+  @HiveField(28)
   String? ac;
+  @HiveField(29)
   String? ad;
+  @HiveField(30)
   String? ae;
+  @HiveField(31)
   String? af;
+  @HiveField(32)
   String? ag;
 
   School({

@@ -5,6 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'app.dart';
+import 'common/utils/hive_utils.dart';
 
 void main() {
   // * make sure widgets is initialized
@@ -17,6 +18,8 @@ void main() {
     // * init database
     await Hive.initFlutter();
     await Hive.openBox('common_box');
+    // * register hive custom model adapter
+    await HiveUtils.registerAdapter();
 
     runApp(
       MultiProvider(
