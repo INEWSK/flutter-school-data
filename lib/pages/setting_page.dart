@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_school_information/common/utils/toast_utils.dart';
 import 'package:flutter_school_information/provider/theme_provider.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 class SettingPage extends StatefulWidget {
@@ -62,7 +61,6 @@ class _SettingPageState extends State<SettingPage>
           : i == 1
               ? message = 'Chinese'
               : message = 'English';
-
       Toast.show(message);
     }
   }
@@ -94,37 +92,51 @@ class _SettingPageState extends State<SettingPage>
     super.build(context);
     return Consumer<ThemeProvider>(
       builder: (_, provider, __) {
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              ListTile(
-                title: const Text('Theme'),
-                subtitle: Text(_getTheme(context)),
-                onTap: () => _selectTheme(context),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SafeArea(
+              child: Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Text(
+                  'Settings',
+                  style: TextStyle(fontSize: 48.0),
+                ),
               ),
-              ListTile(
-                title: const Text('Language'),
-                subtitle: const Text("Chinese"),
-                onTap: () => _selectLanguage(context),
+            ),
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  ListTile(
+                    title: const Text('Theme'),
+                    subtitle: Text(_getTheme(context)),
+                    onTap: () => _selectTheme(context),
+                  ),
+                  ListTile(
+                    title: const Text('Language'),
+                    subtitle: const Text("Chinese"),
+                    onTap: () => _selectLanguage(context),
+                  ),
+                  ListTile(
+                    title: const Text('Terms'),
+                    onTap: () {},
+                  ),
+                  ListTile(
+                    title: const Text('About'),
+                    onTap: () {
+                      showAboutDialog(
+                        context: context,
+                        applicationLegalese:
+                            'Copyright(c) 2022 by hkmu.comps313f student',
+                        applicationName: 'Hong Kong School Information',
+                        applicationVersion: '0.1',
+                      );
+                    },
+                  ),
+                ],
               ),
-              ListTile(
-                title: const Text('Terms'),
-                onTap: () {},
-              ),
-              ListTile(
-                title: const Text('About'),
-                onTap: () {
-                  showAboutDialog(
-                    context: context,
-                    applicationLegalese:
-                        'Copyright(c) 2022 by hkmu.comps313f student',
-                    applicationName: 'Hong Kong School Information',
-                    applicationVersion: '0.1',
-                  );
-                },
-              ),
-            ],
-          ),
+            ),
+          ],
         );
       },
     );

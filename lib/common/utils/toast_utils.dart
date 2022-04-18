@@ -5,4 +5,8 @@ class Toast {
     if (message.isEmpty) return;
     Fluttertoast.showToast(msg: message);
   }
+
+  static void cancel() {
+    Fluttertoast.cancel();
+  }
 }

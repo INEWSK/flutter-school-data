@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GoogleMapPage extends StatefulWidget {
@@ -10,11 +9,15 @@ class GoogleMapPage extends StatefulWidget {
     required this.id,
     required this.latitude,
     required this.longitude,
+    required this.school,
+    required this.address,
   }) : super(key: key);
 
   final String id;
   final double latitude;
   final double longitude;
+  final String school;
+  final String address;
 
   @override
   State<GoogleMapPage> createState() => _GoogleMapPageState();
@@ -31,30 +34,44 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
   //   controller.animateCamera(CameraUpdate.newCameraPosition(_position));
   // }
 
-  void _setMarker(LatLng position) {
+  void _setMarker({
+    required String id,
+    required LatLng position,
+    required String school,
+    required String address,
+  }) {
     final Marker marker = Marker(
-        markerId: MarkerId('id'),
+        markerId: MarkerId(id),
         position: position,
-        infoWindow: InfoWindow(title: 'Title', snippet: 'Address'));
+        infoWindow: InfoWindow(title: school, snippet: address));
 
     setState(() {
-      _markers[MarkerId('id')] = marker;
+      _markers[MarkerId(id)] = marker;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final _position = LatLng(widget.latitude, widget.longitude);
+    final id = widget.id;
+    final position = LatLng(widget.latitude, widget.longitude);
+    final school = widget.school;
+    final address = widget.address;
+
     return Scaffold(
       body: Stack(
         children: [
           GoogleMap(
             zoomControlsEnabled: false,
             mapType: MapType.normal,
-            initialCameraPosition: CameraPosition(target: _position, zoom: 15),
+            initialCameraPosition: CameraPosition(target: position, zoom: 15),
             onMapCreated: (GoogleMapController controller) {
               _controller.complete(controller);
-              _setMarker(_position);
+              _setMarker(
+                id: id,
+                position: position,
+                school: school,
+                address: address,
+              );
             },
             markers: Set<Marker>.of(_markers.values),
           ),

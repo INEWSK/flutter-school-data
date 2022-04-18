@@ -24,6 +24,7 @@ Future _fetchData() async {
   const path = 'assets/json/SCH_LOC_EDB.json';
   const url =
       'https://www.edb.gov.hk/attachment/en/student-parents/sch-info/sch-search/sch-location-info/SCH_LOC_EDB.json';
+
   // * init hive utils
   var hiveUtils = HiveUtils();
   // * check connect status
@@ -31,22 +32,28 @@ Future _fetchData() async {
 
   const String boxName = 'school_data';
 
+  // * if no network, try get data from local database if exists
   if (connect == ConnectivityResult.none) {
     try {
-      // * if network unavailable, check for local data
       bool exist = await hiveUtils.isExists(boxName: boxName);
       if (exist) {
         List list = await hiveUtils.getBoxes<School>(boxName);
         return list;
       }
     } catch (e) {
-      // * no local data, and no network
+      // * no local data and no network, return error
       return Future.error('Network unavailable, please check your network');
     }
   }
 
+  // * fetch data from API
   try {
     var response = await rootBundle.loadString(path);
+    // var response = await Dio().get(url,
+    //     options: Options(
+    //       contentType: Headers.textPlainContentType,
+    //       responseType: ResponseType.plain,
+    //     ));
 
     final data = List<School>.from(
       json.decode(response).map((i) => School.fromMap(i)),
@@ -79,9 +86,10 @@ class _HomePageState extends State<HomePage>
     return FutureBuilder(
       future: _fetchData(),
       builder: ((context, snapshot) {
+        Widget child;
         if (snapshot.hasData) {
           final data = snapshot.data as List<School>;
-          return EasyRefresh(
+          child = EasyRefresh(
             // * building list view
             child: ListView.builder(
               itemCount: data.length, // skip first key
@@ -100,7 +108,7 @@ class _HomePageState extends State<HomePage>
                 );
               }),
             ),
-            // * pull to refresh and fetch API again
+            // * pull to refresh and fetch data again
             onRefresh: () async {
               setState(() {
                 _fetchData();
@@ -110,28 +118,30 @@ class _HomePageState extends State<HomePage>
         } else if (snapshot.hasError) {
           // * show error page and retry button
           final error = snapshot.error?.toString();
-          return Center(
-              child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(error ?? 'Error'),
-              const SizedBox(height: 10),
-              ElevatedButton.icon(
-                onPressed: () {
-                  // * reload whole list view widget
-                  setState(() {
-                    _listView();
-                  });
-                },
-                label: const Text('Retry'),
-                icon: const Icon(Icons.refresh),
-              ),
-            ],
-          ));
+          child = Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(error ?? 'Error'),
+                const SizedBox(height: 10),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // * reload whole list view widget
+                    setState(() {
+                      _listView();
+                    });
+                  },
+                  label: const Text('Retry'),
+                  icon: const Icon(Icons.refresh),
+                ),
+              ],
+            ),
+          );
         } else {
           // * show loading effect
-          return _shimmer();
+          child = _shimmer();
         }
+        return child;
       }),
     );
   }
@@ -191,6 +201,9 @@ class _HomePageState extends State<HomePage>
     // * must call super in automaticKeepAliveClientMixin
     super.build(context);
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('香港學校資料'),
+      ),
       body: _listView(),
     );
   }
