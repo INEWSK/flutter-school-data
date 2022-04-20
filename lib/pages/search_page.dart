@@ -113,7 +113,14 @@ class SearchBar extends SearchDelegate {
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
-      IconButton(icon: const Icon(Icons.clear), onPressed: () => query = ""),
+      // IconButton(icon: const Icon(Icons.clear), onPressed: () => query = ""),
+      IconButton(
+        icon: AnimatedIcon(
+          icon: AnimatedIcons.menu_close,
+          progress: transitionAnimation,
+        ),
+        onPressed: () => query = '',
+      ),
     ];
   }
 
@@ -139,11 +146,16 @@ class SearchBar extends SearchDelegate {
   @override
   Widget buildSuggestions(BuildContext context) {
     List<School> suggestions = source.where((source) {
-      final searchNameResult = source.d.toString().toLowerCase();
-      final locationResult = source.f.toString().toLowerCase();
+      final engName = source.d.toString().toLowerCase();
+      final engLocation = source.f.toString().toLowerCase();
+      final chiName = source.e.toString();
+      final chiLocation = source.g.toString();
       final input = query.toLowerCase();
 
-      return searchNameResult.contains(input) || locationResult.contains(input);
+      return engName.contains(input) ||
+          engLocation.contains(input) ||
+          chiName.contains(input) ||
+          chiLocation.contains(input);
     }).toList();
 
     if (query.isEmpty) {
@@ -157,8 +169,8 @@ class SearchBar extends SearchDelegate {
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 4.0),
           child: ListTile(
-            title: Text(suggestions[index].d!),
-            subtitle: Text(suggestions[index].f!),
+            title: Text(suggestions[index].e!),
+            subtitle: Text(suggestions[index].g!),
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(

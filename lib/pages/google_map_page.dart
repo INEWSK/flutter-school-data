@@ -50,6 +50,19 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
     });
   }
 
+  // * add update camera position animation when google map init
+  Future<void> _locateSchool(LatLng position) async {
+    final c = await _controller.future;
+    CameraPosition cameraPosition =
+        CameraPosition(target: position, zoom: 16.0);
+
+    c.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+  }
+
+  Widget _bottomCard() {
+    return Container();
+  }
+
   @override
   Widget build(BuildContext context) {
     final id = widget.id;
@@ -63,7 +76,7 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
           GoogleMap(
             zoomControlsEnabled: false,
             mapType: MapType.normal,
-            initialCameraPosition: CameraPosition(target: position, zoom: 15),
+            initialCameraPosition: CameraPosition(target: _hongKong, zoom: 12),
             onMapCreated: (GoogleMapController controller) {
               _controller.complete(controller);
               _setMarker(
@@ -72,6 +85,7 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
                 school: school,
                 address: address,
               );
+              _locateSchool(position);
             },
             markers: Set<Marker>.of(_markers.values),
           ),

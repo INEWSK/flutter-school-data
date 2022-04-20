@@ -123,6 +123,8 @@ class _DetailPageState extends State<DetailPage> {
       title: '學校名稱',
       children: [
         Text(data.e!),
+        const SizedBox(height: 10),
+        Text(data.d!),
       ],
     );
   }
