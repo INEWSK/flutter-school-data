@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:flutter_school_information/provider/intl_provider.dart';
 import 'package:flutter_school_information/provider/theme_provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -24,11 +26,12 @@ void main() {
     runApp(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(
-            create: (context) => ThemeProvider(),
-          ),
+          ChangeNotifierProvider(create: (context) => ThemeProvider()),
+          ChangeNotifierProvider(create: (context) => IntlProvider()),
         ],
-        child: const MyApp(),
+        child: Phoenix(
+          child: const MyApp(),
+        ),
       ),
     );
   });

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../generated/l10n.dart';
+
 class BottomTapBar extends StatelessWidget {
   const BottomTapBar({
     Key? key,
@@ -13,18 +15,18 @@ class BottomTapBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      items: const [
+      items: [
         BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
+          icon: const Icon(Icons.home),
+          label: S.of(context).home,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.search),
-          label: 'Search',
+          icon: const Icon(Icons.search),
+          label: S.of(context).search,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          label: 'Setting',
+          icon: const Icon(Icons.settings),
+          label: S.of(context).setting,
         ),
       ],
       currentIndex: index,

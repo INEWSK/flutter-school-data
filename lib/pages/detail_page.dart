@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_school_information/provider/intl_provider.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../generated/l10n.dart';
 import '../models/school.dart';
 import 'google_map_page.dart';
 
@@ -19,12 +23,12 @@ class _DetailPageState extends State<DetailPage> {
     String message;
     String scheme;
     if (type == 'http') {
-      title = 'Open website';
-      message = 'Press YES to launch browser.';
+      title = S.of(context).openWeb;
+      message = S.of(context).clickToBrowse;
       scheme = '';
     } else {
-      title = 'Phone call';
-      message = 'Press YES to make phone call.';
+      title = S.of(context).phoneCall;
+      message = S.of(context).clickToCall;
       scheme = 'tel://';
     }
     showDialog(
@@ -35,9 +39,9 @@ class _DetailPageState extends State<DetailPage> {
           content: Text(message),
           actions: [
             TextButton(
-              child: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 6.0),
-                child: Text('Yes'),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6.0),
+                child: Text(S.of(context).confirm),
               ),
               onPressed: () => Navigator.pop(
                 context,
@@ -45,9 +49,9 @@ class _DetailPageState extends State<DetailPage> {
               ),
             ),
             TextButton(
-              child: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 6.0),
-                child: Text('Cancel'),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6.0),
+                child: Text(S.of(context).cancel),
               ),
               onPressed: () => Navigator.pop(context),
             ),
@@ -59,6 +63,7 @@ class _DetailPageState extends State<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final String locale = context.read<IntlProvider>().language;
     final data = widget.data;
     return Scaffold(
       body: CustomScrollView(
@@ -73,7 +78,7 @@ class _DetailPageState extends State<DetailPage> {
                 StretchMode.blurBackground,
                 StretchMode.fadeTitle
               ],
-              title: Text(data.e!),
+              title: locale == 'zh' ? Text(data.e!) : Text(data.d!),
               background: const FlutterLogo(),
             ),
           ),
@@ -83,10 +88,10 @@ class _DetailPageState extends State<DetailPage> {
               delegate: SliverChildListDelegate(
                 [
                   _schoolName(data),
-                  _schoolType(data),
-                  _schoolAddress(data),
-                  _schoolContact(data),
-                  _schoolWebsite(data),
+                  _schoolType(data, locale),
+                  _schoolAddress(data, locale),
+                  _schoolContact(data, locale),
+                  _schoolWebsite(data, locale),
                 ],
               ),
             ),
@@ -96,7 +101,7 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  Widget _googleMapButton(School data) {
+  Widget _googleMapButton(School data, String locale) {
     return (data.j != null && data.h != null)
         ? ElevatedButton.icon(
             onPressed: () => Navigator.push(
@@ -112,7 +117,7 @@ class _DetailPageState extends State<DetailPage> {
               ),
             ),
             icon: const Icon(Icons.map),
-            label: const Text('地圖上顯示'),
+            label: Text(S.of(context).showOnMap),
           )
         : const SizedBox();
   }
@@ -120,7 +125,7 @@ class _DetailPageState extends State<DetailPage> {
   Widget _schoolName(School data) {
     return ContentBlock(
       icon: const Icon(Icons.school),
-      title: '學校名稱',
+      title: S.of(context).schoolName,
       children: [
         Text(data.e!),
         const SizedBox(height: 10),
@@ -129,10 +134,10 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  Widget _schoolType(School data) {
+  Widget _schoolType(School data, String locale) {
     return ContentBlock(
       icon: const Icon(Icons.class_),
-      title: '學校類型',
+      title: S.of(context).schoolType,
       children: [
         Table(
           columnWidths: const {
@@ -142,61 +147,61 @@ class _DetailPageState extends State<DetailPage> {
           children: [
             TableRow(
               children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text('學校類別'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Text(S.of(context).schoolLevel),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text(data.y!),
+                  child: locale == 'zh' ? Text(data.y!) : Text(data.x!),
                 ),
               ],
             ),
             TableRow(
               children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text('資助種類'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Text(S.of(context).financeType),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text(data.w!),
+                  child: locale == 'zh' ? Text(data.w!) : Text(data.v!),
                 ),
               ],
             ),
             TableRow(
               children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text('就讀學生性別'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Text(S.of(context).studentGender),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text(data.q!),
+                  child: locale == 'zh' ? Text(data.q!) : Text(data.p!),
                 ),
               ],
             ),
             TableRow(
               children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text('授課時間'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Text(S.of(context).schoolSession),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text(data.s!),
+                  child: locale == 'zh' ? Text(data.s!) : Text(data.r!),
                 ),
               ],
             ),
             TableRow(
               children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text('宗教信仰'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Text(S.of(context).religion),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text(data.ag!),
+                  child: locale == 'zh' ? Text(data.ag!) : Text(data.af!),
                 ),
               ],
             ),
@@ -206,10 +211,10 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  Widget _schoolAddress(School data) {
+  Widget _schoolAddress(School data, String locale) {
     return ContentBlock(
       icon: const Icon(Icons.location_city),
-      title: '學校地址',
+      title: S.of(context).schoolType,
       children: [
         Table(
           columnWidths: const {
@@ -219,25 +224,25 @@ class _DetailPageState extends State<DetailPage> {
           children: [
             TableRow(
               children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text('分區'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Text(S.of(context).district),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text(data.u!),
+                  child: locale == 'zh' ? Text(data.u!) : Text(data.t!),
                 ),
               ],
             ),
             TableRow(
               children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text('地址'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Text(S.of(context).address),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text(data.g!),
+                  child: locale == 'zh' ? Text(data.g!) : Text(data.f!),
                 ),
               ],
             ),
@@ -245,16 +250,16 @@ class _DetailPageState extends State<DetailPage> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: _googleMapButton(data),
+          child: _googleMapButton(data, locale),
         )
       ],
     );
   }
 
-  Widget _schoolContact(School data) {
+  Widget _schoolContact(School data, String locale) {
     return ContentBlock(
       icon: const Icon(Icons.contact_mail),
-      title: '聯絡資料',
+      title: S.of(context).contact,
       children: [
         Table(
           columnWidths: const {
@@ -264,9 +269,9 @@ class _DetailPageState extends State<DetailPage> {
           children: [
             TableRow(
               children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text('聯絡電話'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Text(S.of(context).telephone),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -281,21 +286,21 @@ class _DetailPageState extends State<DetailPage> {
                           ),
                           onTap: () => _launchURL(type: 'tel', url: data.aa!),
                         )
-                      : const Text('沒有提供')),
+                      : Text(S.of(context).NA)),
                 ),
               ],
             ),
             TableRow(
               children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4.0),
-                  child: Text('傳真號碼'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Text(S.of(context).faxNumber),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                   child: (data.aa!.isNotEmpty && !data.aa!.contains('N.A.')
                       ? Text(data.ac!)
-                      : const Text('沒有提供')),
+                      : Text(S.of(context).NA)),
                 ),
               ],
             ),
@@ -306,13 +311,13 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  Widget _schoolWebsite(School data) {
+  Widget _schoolWebsite(School data, String locale) {
     return ContentBlock(
       icon: const Icon(Icons.web),
-      title: '學校網頁',
+      title: S.of(context).website,
       children: [
         (data.ae!.isEmpty || data.ae!.contains('N.A'))
-            ? Text('沒有提供')
+            ? Text(S.of(context).NA)
             : GestureDetector(
                 child: Text(
                   data.ae!,

@@ -2,10 +2,13 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_school_information/common/utils/toast_utils.dart';
+import 'package:flutter_school_information/provider/intl_provider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 import '../common/utils/hive_utils.dart';
+import '../generated/l10n.dart';
 import '../models/school.dart';
 import 'detail_page.dart';
 
@@ -54,7 +57,7 @@ class _SearchPageState extends State<SearchPage>
         List<Widget> children;
         if (snapshot.hasData) {
           children = [
-            const Text('Press button to search school information.'),
+            Text(S.of(context).clickToSearch),
             const SizedBox(height: 50),
             AspectRatio(
                 aspectRatio: 1.5,
@@ -66,12 +69,12 @@ class _SearchPageState extends State<SearchPage>
                 delegate: SearchBar(_source),
               ),
               icon: const Icon(Icons.search),
-              label: const Text('Search'),
+              label: Text(S.of(context).search),
             ),
           ];
         } else if (snapshot.hasError) {
           children = [
-            const Text('Press button try to refresh data.'),
+            Text(S.of(context).clickToRetry),
             const SizedBox(height: 50),
             AspectRatio(
                 aspectRatio: 1.5,
@@ -145,13 +148,16 @@ class SearchBar extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
+    // * remove first item
+    source.removeAt(0);
+
     List<School> suggestions = source.where((source) {
       final engName = source.d.toString().toLowerCase();
       final engLocation = source.f.toString().toLowerCase();
       final chiName = source.e.toString();
       final chiLocation = source.g.toString();
       final input = query.toLowerCase();
-
+      // * return search result
       return engName.contains(input) ||
           engLocation.contains(input) ||
           chiName.contains(input) ||
@@ -162,6 +168,8 @@ class SearchBar extends SearchDelegate {
       suggestions.clear();
     }
 
+    final String locale = context.read<IntlProvider>().language;
+
     return ListView.builder(
       shrinkWrap: true,
       itemCount: suggestions.length,
@@ -169,8 +177,12 @@ class SearchBar extends SearchDelegate {
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 4.0),
           child: ListTile(
-            title: Text(suggestions[index].e!),
-            subtitle: Text(suggestions[index].g!),
+            title: locale == 'zh'
+                ? Text(suggestions[index].e!)
+                : Text(suggestions[index].d!),
+            subtitle: locale == 'zh'
+                ? Text(suggestions[index].g!)
+                : Text(suggestions[index].f!),
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(

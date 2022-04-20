@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_school_information/common/utils/toast_utils.dart';
+import 'package:flutter_school_information/provider/intl_provider.dart';
 import 'package:flutter_school_information/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
+
+import '../generated/l10n.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({Key? key}) : super(key: key);
@@ -20,11 +24,11 @@ class _SettingPageState extends State<SettingPage>
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: const Text('Select Theme Color'),
+          title: Text(S.of(context).themeDialogTitle),
           children: [
-            _dialogOption(context, 0, 'Follow System'),
-            _dialogOption(context, 1, 'Light'),
-            _dialogOption(context, 2, 'Dark'),
+            _dialogOption(context, 0, S.of(context).followSystem),
+            _dialogOption(context, 1, S.of(context).lightTheme),
+            _dialogOption(context, 2, S.of(context).darkTheme),
           ],
         );
       },
@@ -45,23 +49,23 @@ class _SettingPageState extends State<SettingPage>
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: const Text('Select Language'),
+          title: Text(S.of(context).languageDialogTitle),
           children: [
-            _dialogOption(context, 0, 'Default'),
-            _dialogOption(context, 1, 'Chinese'),
-            _dialogOption(context, 2, 'English'),
+            _dialogOption(context, 0, S.of(context).followSystem),
+            _dialogOption(context, 1, S.of(context).chinese),
+            _dialogOption(context, 2, S.of(context).english),
           ],
         );
       },
     );
     if (!i.isNaN) {
-      String message;
+      final String language;
       i == 0
-          ? message = 'Default'
+          ? language = 'default'
           : i == 1
-              ? message = 'Chinese'
-              : message = 'English';
-      Toast.show(message);
+              ? language = 'zh'
+              : language = 'en';
+      context.read<IntlProvider>().setLocale(language: language);
     }
   }
 
@@ -77,30 +81,52 @@ class _SettingPageState extends State<SettingPage>
 
   String _getTheme(BuildContext context) {
     final ThemeMode themeMode = context.read<ThemeProvider>().getTheme();
+    final String text;
+
     switch (themeMode) {
       case ThemeMode.light:
-        return 'Light';
+        text = S.of(context).lightTheme;
+        break;
       case ThemeMode.dark:
-        return 'Dark';
+        text = S.of(context).darkTheme;
+        break;
       default:
-        return 'Follow System';
+        text = S.of(context).followSystem;
     }
+    return text;
+  }
+
+  String _getLocale(BuildContext context) {
+    final String language = context.read<IntlProvider>().language;
+    final String text;
+
+    switch (language) {
+      case 'zh':
+        text = S.of(context).chinese;
+        break;
+      case 'en':
+        text = S.of(context).english;
+        break;
+      default:
+        text = S.of(context).followSystem;
+    }
+    return text;
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Consumer<ThemeProvider>(
-      builder: (_, provider, __) {
+    return Consumer2(
+      builder: (_, ThemeProvider provider, IntlProvider intl, __) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SafeArea(
+            SafeArea(
               child: Padding(
-                padding: EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(20.0),
                 child: Text(
-                  'Settings',
-                  style: TextStyle(fontSize: 48.0),
+                  S.of(context).settings,
+                  style: const TextStyle(fontSize: 48.0),
                 ),
               ),
             ),
@@ -108,28 +134,28 @@ class _SettingPageState extends State<SettingPage>
               child: Column(
                 children: [
                   ListTile(
-                    title: const Text('Theme'),
+                    title: Text(S.of(context).theme),
                     subtitle: Text(_getTheme(context)),
                     onTap: () => _selectTheme(context),
                   ),
                   ListTile(
-                    title: const Text('Language'),
-                    subtitle: const Text("Chinese"),
+                    title: Text(S.of(context).language),
+                    subtitle: Text(_getLocale(context)),
                     onTap: () => _selectLanguage(context),
                   ),
                   ListTile(
-                    title: const Text('Terms'),
+                    title: Text(S.of(context).terms),
                     onTap: () {},
                   ),
                   ListTile(
-                    title: const Text('About'),
+                    title: Text(S.of(context).about),
                     onTap: () {
                       showAboutDialog(
                         context: context,
                         applicationLegalese:
                             'Copyright(c) 2022 by hkmu.comps313f student',
-                        applicationName: 'Hong Kong School Information',
-                        applicationVersion: '0.1',
+                        applicationName: S.of(context).appTitle,
+                        applicationVersion: '0.1a',
                       );
                     },
                   ),
