@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_school_information/provider/intl_provider.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../generated/l10n.dart';
 import '../models/school.dart';
+import '../provider/intl_provider.dart';
 import 'google_map_page.dart';
 
 class DetailPage extends StatefulWidget {
@@ -18,7 +17,8 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
-  Future<void> _launchURL({required String type, required String url}) async {
+  Future<void> _launchURLDialog(
+      {required String type, required String url}) async {
     String title;
     String message;
     String scheme;
@@ -41,19 +41,19 @@ class _DetailPageState extends State<DetailPage> {
             TextButton(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 6.0),
+                child: Text(S.of(context).cancel),
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+            TextButton(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6.0),
                 child: Text(S.of(context).confirm),
               ),
               onPressed: () => Navigator.pop(
                 context,
                 launch(scheme + url),
               ),
-            ),
-            TextButton(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6.0),
-                child: Text(S.of(context).cancel),
-              ),
-              onPressed: () => Navigator.pop(context),
             ),
           ],
         );
@@ -63,8 +63,9 @@ class _DetailPageState extends State<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final String locale = context.read<IntlProvider>().language;
+    final Locale locale = context.read<IntlProvider>().locale;
     final data = widget.data;
+
     return Scaffold(
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
@@ -78,7 +79,9 @@ class _DetailPageState extends State<DetailPage> {
                 StretchMode.blurBackground,
                 StretchMode.fadeTitle
               ],
-              title: locale == 'zh' ? Text(data.e!) : Text(data.d!),
+              title: locale == const Locale('zh', 'HK')
+                  ? Text(data.e!)
+                  : Text(data.d!),
               background: const FlutterLogo(),
             ),
           ),
@@ -88,10 +91,10 @@ class _DetailPageState extends State<DetailPage> {
               delegate: SliverChildListDelegate(
                 [
                   _schoolName(data),
-                  _schoolType(data, locale),
-                  _schoolAddress(data, locale),
-                  _schoolContact(data, locale),
-                  _schoolWebsite(data, locale),
+                  _schoolType(data),
+                  _schoolAddress(data),
+                  _schoolContact(data),
+                  _schoolWebsite(data),
                 ],
               ),
             ),
@@ -101,18 +104,15 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  Widget _googleMapButton(School data, String locale) {
+  Widget _googleMapButton(School data) {
     return (data.j != null && data.h != null)
         ? ElevatedButton.icon(
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(
                 builder: ((context) => GoogleMapPage(
-                      id: data.a!,
-                      latitude: double.parse(data.j!),
-                      longitude: double.parse(data.h!),
-                      school: data.e!,
-                      address: data.g!,
+                      school: data,
+                      data: const [],
                     )),
               ),
             ),
@@ -134,7 +134,9 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  Widget _schoolType(School data, String locale) {
+  Widget _schoolType(School data) {
+    final Locale locale = context.read<IntlProvider>().locale;
+
     return ContentBlock(
       icon: const Icon(Icons.class_),
       title: S.of(context).schoolType,
@@ -153,7 +155,9 @@ class _DetailPageState extends State<DetailPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: locale == 'zh' ? Text(data.y!) : Text(data.x!),
+                  child: locale == const Locale('zh', 'HK')
+                      ? Text(data.y!)
+                      : Text(data.x!),
                 ),
               ],
             ),
@@ -165,7 +169,9 @@ class _DetailPageState extends State<DetailPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: locale == 'zh' ? Text(data.w!) : Text(data.v!),
+                  child: locale == const Locale('zh', 'HK')
+                      ? Text(data.w!)
+                      : Text(data.v!),
                 ),
               ],
             ),
@@ -177,7 +183,9 @@ class _DetailPageState extends State<DetailPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: locale == 'zh' ? Text(data.q!) : Text(data.p!),
+                  child: locale == const Locale('zh', 'HK')
+                      ? Text(data.q!)
+                      : Text(data.p!),
                 ),
               ],
             ),
@@ -189,7 +197,9 @@ class _DetailPageState extends State<DetailPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: locale == 'zh' ? Text(data.s!) : Text(data.r!),
+                  child: locale == const Locale('zh', 'HK')
+                      ? Text(data.s!)
+                      : Text(data.r!),
                 ),
               ],
             ),
@@ -201,7 +211,9 @@ class _DetailPageState extends State<DetailPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: locale == 'zh' ? Text(data.ag!) : Text(data.af!),
+                  child: locale == const Locale('zh', 'HK')
+                      ? Text(data.ag!)
+                      : Text(data.af!),
                 ),
               ],
             ),
@@ -211,7 +223,9 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  Widget _schoolAddress(School data, String locale) {
+  Widget _schoolAddress(School data) {
+    final Locale locale = context.read<IntlProvider>().locale;
+
     return ContentBlock(
       icon: const Icon(Icons.location_city),
       title: S.of(context).schoolType,
@@ -230,7 +244,9 @@ class _DetailPageState extends State<DetailPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: locale == 'zh' ? Text(data.u!) : Text(data.t!),
+                  child: locale == const Locale('zh', 'HK')
+                      ? Text(data.u!)
+                      : Text(data.t!),
                 ),
               ],
             ),
@@ -242,7 +258,9 @@ class _DetailPageState extends State<DetailPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: locale == 'zh' ? Text(data.g!) : Text(data.f!),
+                  child: locale == const Locale('zh', 'HK')
+                      ? Text(data.g!)
+                      : Text(data.f!),
                 ),
               ],
             ),
@@ -250,13 +268,13 @@ class _DetailPageState extends State<DetailPage> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: _googleMapButton(data, locale),
+          child: _googleMapButton(data),
         )
       ],
     );
   }
 
-  Widget _schoolContact(School data, String locale) {
+  Widget _schoolContact(School data) {
     return ContentBlock(
       icon: const Icon(Icons.contact_mail),
       title: S.of(context).contact,
@@ -284,7 +302,8 @@ class _DetailPageState extends State<DetailPage> {
                               decoration: TextDecoration.underline,
                             ),
                           ),
-                          onTap: () => _launchURL(type: 'tel', url: data.aa!),
+                          onTap: () =>
+                              _launchURLDialog(type: 'tel', url: data.aa!),
                         )
                       : Text(S.of(context).NA)),
                 ),
@@ -311,7 +330,7 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  Widget _schoolWebsite(School data, String locale) {
+  Widget _schoolWebsite(School data) {
     return ContentBlock(
       icon: const Icon(Icons.web),
       title: S.of(context).website,
@@ -326,7 +345,7 @@ class _DetailPageState extends State<DetailPage> {
                     decoration: TextDecoration.underline,
                   ),
                 ),
-                onTap: () => _launchURL(type: 'http', url: data.ae!),
+                onTap: () => _launchURLDialog(type: 'http', url: data.ae!),
               ),
       ],
     );

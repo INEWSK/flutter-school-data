@@ -1,6 +1,5 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_school_information/pages/agreement_page.dart';
 import 'package:flutter_school_information/provider/intl_provider.dart';
 import 'package:flutter_school_information/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
@@ -80,7 +79,7 @@ class _SettingPageState extends State<SettingPage>
   }
 
   String _getTheme(BuildContext context) {
-    final ThemeMode themeMode = context.read<ThemeProvider>().getTheme();
+    final ThemeMode themeMode = context.read<ThemeProvider>().theme;
     final String text;
 
     switch (themeMode) {
@@ -97,18 +96,15 @@ class _SettingPageState extends State<SettingPage>
   }
 
   String _getLocale(BuildContext context) {
-    final String language = context.read<IntlProvider>().language;
+    final Locale locale = context.read<IntlProvider>().locale;
     final String text;
 
-    switch (language) {
-      case 'zh':
-        text = S.of(context).chinese;
-        break;
-      case 'en':
-        text = S.of(context).english;
-        break;
-      default:
-        text = S.of(context).followSystem;
+    if (locale == const Locale('zh', 'HK')) {
+      text = S.of(context).chinese;
+    } else if (locale == const Locale('en')) {
+      text = S.of(context).english;
+    } else {
+      text = S.of(context).followSystem;
     }
     return text;
   }
@@ -130,36 +126,44 @@ class _SettingPageState extends State<SettingPage>
                 ),
               ),
             ),
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  ListTile(
-                    title: Text(S.of(context).theme),
-                    subtitle: Text(_getTheme(context)),
-                    onTap: () => _selectTheme(context),
-                  ),
-                  ListTile(
-                    title: Text(S.of(context).language),
-                    subtitle: Text(_getLocale(context)),
-                    onTap: () => _selectLanguage(context),
-                  ),
-                  ListTile(
-                    title: Text(S.of(context).terms),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    title: Text(S.of(context).about),
-                    onTap: () {
-                      showAboutDialog(
-                        context: context,
-                        applicationLegalese:
-                            'Copyright(c) 2022 by hkmu.comps313f student',
-                        applicationName: S.of(context).appTitle,
-                        applicationVersion: '0.1a',
-                      );
-                    },
-                  ),
-                ],
+            // * column inside a column and make it scrollable
+            Flexible(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: Text(S.of(context).theme),
+                      subtitle: Text(_getTheme(context)),
+                      onTap: () => _selectTheme(context),
+                    ),
+                    ListTile(
+                      title: Text(S.of(context).language),
+                      subtitle: Text(_getLocale(context)),
+                      onTap: () => _selectLanguage(context),
+                    ),
+                    ListTile(
+                      title: Text(S.of(context).terms),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: ((context) => const AgreementPage()),
+                        ),
+                      ),
+                    ),
+                    ListTile(
+                      title: Text(S.of(context).about),
+                      onTap: () {
+                        showAboutDialog(
+                          context: context,
+                          applicationLegalese:
+                              'Copyright(c) 2022\nmade by HKMU students\nschool data from HK GOV',
+                          applicationName: S.of(context).appTitle,
+                          applicationVersion: '0.1a',
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

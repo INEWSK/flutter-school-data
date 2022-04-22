@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
           title: 'Hong Kong School Information',
           theme: light(context),
           darkTheme: dark(context),
-          themeMode: provider.getTheme(),
+          themeMode: provider.theme,
           localizationsDelegates: const [
             S.delegate,
             GlobalMaterialLocalizations.delegate,

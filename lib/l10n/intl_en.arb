@@ -39,6 +39,18 @@
     "NA": "N.A.",
     "clickToCall": "Press OK to call the phone number",
     "clickToBrowse": "Press OK to browse school website",
-    "clickToSearch": "Press button to search school information",
-    "clickToRetry": "Press button try to refresh data"
+    "clickToSearch": "Or press the button to search school information",
+    "clickToRetry": "Press button try to refresh data",
+    "retry": "Retry",
+    "error": "Error",
+    "searchListed": "Search result will be listed here",
+    "nothingHere": "Oops... nothing here",
+    "loading": "Loading...",
+    "primarySchool": "Primary school",
+    "secondarySchool": "Secondary school",
+    "getStart": "Get Start",
+    "backToExit": "Press back again to exit",
+    "sortBy": "Sort by",
+    "warning": "Warning",
+    "openGoogleMap": "That will display the coords of the {count} schools in the list."
 }

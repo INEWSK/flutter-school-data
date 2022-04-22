@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 
 import '../common/demo/demo.dart';
 import '../components/dot_indicator.dart';
+import '../generated/l10n.dart';
 import 'main_page.dart';
 
 class OnBoardingPage extends StatefulWidget {
@@ -102,7 +103,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: ElevatedButton(
                   onPressed: () => _onIntroEnd(context),
-                  child: const Text('Get Start'),
+                  child: Text(S.of(context).getStart),
                 ),
               ),
               const Spacer(),

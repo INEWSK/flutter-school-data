@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.flutter_school_information">
    <application
-        android:label="flutter_school_information"
+        android:label="HK School Information"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -33,4 +33,7 @@
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD6AeqTop0ttssCiWepEEcJ5pQoCbRFSgE"/>
     </application>
+    <queries>
+        <package android:name="com.google.android.apps.maps" />
+    </queries>
 </manifest>

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../components/bottom_tab_bar.dart';
 import '../components/double_back_exit_app.dart';
+import '../generated/l10n.dart';
 import 'home_page.dart';
 import 'search_page.dart';
 import 'setting_page.dart';
@@ -39,6 +40,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return DoubleBackExitApp(
+      message: S.of(context).backToExit,
       child: SafeArea(
         top: false,
         bottom: false,

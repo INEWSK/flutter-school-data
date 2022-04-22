@@ -9,7 +9,7 @@ class ThemeProvider extends ChangeNotifier {
   var box = Hive.box('common_box');
 
   void syncTheme() async {
-    final String theme = box.get('app_theme');
+    final String theme = box.get('app_theme') ?? 'System';
     if (theme.isNotEmpty && theme != ThemeMode.system.value) {
       notifyListeners();
     }
@@ -20,9 +20,8 @@ class ThemeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  ThemeMode getTheme() {
-    // * add '?' that string can be null
-    final String? theme = box.get('app_theme');
+  ThemeMode get theme {
+    final String theme = box.get('app_theme') ?? 'System';
     switch (theme) {
       case 'Light':
         return ThemeMode.light;

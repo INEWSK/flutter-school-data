@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:hive/hive.dart';
 
 import '../../models/school.dart';
@@ -11,7 +13,7 @@ class HiveUtils {
 
   /// add list item into the box
   addBoxes<T>(List<T> items, String boxName) async {
-    print("adding boxes");
+    log("adding boxes");
     final openBox = await Hive.openBox(boxName);
 
     for (var item in items) {

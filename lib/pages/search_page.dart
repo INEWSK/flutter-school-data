@@ -1,16 +1,16 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_school_information/common/utils/toast_utils.dart';
-import 'package:flutter_school_information/provider/intl_provider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
 
 import '../common/utils/hive_utils.dart';
+import '../common/utils/toast_utils.dart';
+import '../components/search_bar.dart';
 import '../generated/l10n.dart';
 import '../models/school.dart';
-import 'detail_page.dart';
+import 'filter_page.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -24,15 +24,20 @@ class _SearchPageState extends State<SearchPage>
   @override
   bool get wantKeepAlive => true;
 
-  List<School> _source = [];
+  List<School> _data = [];
 
   // * get data from box (local database)
   Future _getData() async {
+    // * for demo to display loading animation
+    // TODO remove it before release apk
+    // await Future.delayed(const Duration(seconds: 3));
+
     var hiveUtils = HiveUtils();
+
     try {
       List<School> data = await hiveUtils.getBoxes<School>('school_data');
       if (data.isNotEmpty) {
-        _source = data;
+        _data = data;
         return true;
       }
       return Future.error('Data is empty');
@@ -46,154 +51,140 @@ class _SearchPageState extends State<SearchPage>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
+      // appBar: AppBar(),
       body: _pageContent(),
     );
   }
 
-  FutureBuilder<dynamic> _pageContent() {
+  Widget _pageContent() {
     return FutureBuilder(
       future: _getData(),
       builder: (context, snapshot) {
-        List<Widget> children;
+        Widget widget;
         if (snapshot.hasData) {
-          children = [
-            Text(S.of(context).clickToSearch),
-            const SizedBox(height: 50),
-            AspectRatio(
-                aspectRatio: 1.5,
-                child: SvgPicture.asset('assets/svg/undraw_searching.svg')),
-            const SizedBox(height: 50),
-            ElevatedButton.icon(
-              onPressed: () => showSearch(
-                context: context,
-                delegate: SearchBar(_source),
+          widget = Column(
+            children: [
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20.0),
+                  child: Center(
+                    child: Text(
+                      S.of(context).sortBy,
+                      style: DefaultTextStyle.of(context)
+                          .style
+                          .apply(fontSizeFactor: 1.5),
+                    ),
+                  ),
+                ),
               ),
-              icon: const Icon(Icons.search),
-              label: Text(S.of(context).search),
-            ),
-          ];
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _categoryCard(
+                        title: S.of(context).primarySchool,
+                        query: "PRIMARY",
+                      ),
+                    ),
+                    Expanded(
+                      child: _categoryCard(
+                        title: S.of(context).secondarySchool,
+                        query: "SECONDARY",
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Flexible(
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(S.of(context).clickToSearch),
+                        const SizedBox(height: 50),
+                        AspectRatio(
+                            aspectRatio: 1.5,
+                            child: SvgPicture.asset(
+                                'assets/svg/undraw_location_search.svg')),
+                        const SizedBox(height: 50),
+                        ElevatedButton.icon(
+                          onPressed: () => showSearch(
+                            context: context,
+                            delegate: SearchBar(data: _data),
+                          ),
+                          icon: const Icon(Icons.search),
+                          label: Text(S.of(context).search),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
         } else if (snapshot.hasError) {
-          children = [
-            Text(S.of(context).clickToRetry),
-            const SizedBox(height: 50),
-            AspectRatio(
-                aspectRatio: 1.5,
-                child: SvgPicture.asset('assets/svg/undraw_404.svg')),
-            const SizedBox(height: 50),
-            ElevatedButton.icon(
-              onPressed: () => setState(() {
-                _getData();
-              }),
-              icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
-            ),
-          ];
+          widget = Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(S.of(context).clickToRetry),
+              const SizedBox(height: 50),
+              AspectRatio(
+                  aspectRatio: 1.5,
+                  child: SvgPicture.asset('assets/svg/undraw_404.svg')),
+              const SizedBox(height: 50),
+              ElevatedButton.icon(
+                onPressed: () => setState(() {
+                  _getData();
+                }),
+                icon: const Icon(Icons.refresh),
+                label: Text(S.of(context).retry),
+              ),
+            ],
+          );
           Toast.show(snapshot.data.toString());
         } else {
-          children = [
-            const Center(
-              child: SpinKitFadingCube(color: Colors.blueAccent),
-            )
-          ];
-        }
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
+          widget = Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: children,
-          ),
-        );
-      },
-    );
-  }
-}
-
-class SearchBar extends SearchDelegate {
-  final List<School> source;
-
-  SearchBar(this.source);
-
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      // IconButton(icon: const Icon(Icons.clear), onPressed: () => query = ""),
-      IconButton(
-        icon: AnimatedIcon(
-          icon: AnimatedIcons.menu_close,
-          progress: transitionAnimation,
-        ),
-        onPressed: () => query = '',
-      ),
-    ];
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-      icon: AnimatedIcon(
-        icon: AnimatedIcons.menu_arrow, // animate back icon effect
-        progress: transitionAnimation,
-      ),
-      onPressed: () {
-        // close context when clicked
-        close(context, null);
+            children: [
+              const SpinKitChasingDots(color: Colors.blueAccent),
+              const SizedBox(height: 50),
+              Text(S.of(context).loading),
+            ],
+          );
+        }
+        return widget;
       },
     );
   }
 
-  @override
-  Widget buildResults(BuildContext context) {
-    return buildSuggestions(context);
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    // * remove first item
-    source.removeAt(0);
-
-    List<School> suggestions = source.where((source) {
-      final engName = source.d.toString().toLowerCase();
-      final engLocation = source.f.toString().toLowerCase();
-      final chiName = source.e.toString();
-      final chiLocation = source.g.toString();
-      final input = query.toLowerCase();
-      // * return search result
-      return engName.contains(input) ||
-          engLocation.contains(input) ||
-          chiName.contains(input) ||
-          chiLocation.contains(input);
-    }).toList();
-
-    if (query.isEmpty) {
-      suggestions.clear();
-    }
-
-    final String locale = context.read<IntlProvider>().language;
-
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: suggestions.length,
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4.0),
-          child: ListTile(
-            title: locale == 'zh'
-                ? Text(suggestions[index].e!)
-                : Text(suggestions[index].d!),
-            subtitle: locale == 'zh'
-                ? Text(suggestions[index].g!)
-                : Text(suggestions[index].f!),
+  Widget _categoryCard({required String title, required String query}) {
+    return Card(
+      elevation: 0,
+      child: Column(
+        children: [
+          ListTile(
+            // leading: const Icon(Icons.search),
+            // trailing: const Icon(Icons.arrow_right),
+            title: Text(
+              title,
+              style: const TextStyle(fontSize: 14.0),
+            ),
+            // trailing: const Icon(Icons.arrow_right),
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => DetailPage(
-                  data: suggestions[index],
-                ),
+                builder: ((context) => FilterPage(
+                    title: title,
+                    data: _data
+                        .where((element) => element.x!.contains(query))
+                        .toList())),
               ),
             ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }

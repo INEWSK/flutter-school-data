@@ -28,10 +28,6 @@ class IntlProvider extends ChangeNotifier {
     return locale;
   }
 
-  String get language {
-    return box.get('language') ?? Platform.localeName;
-  }
-
   void setLocale({required String language}) async {
     box.put('language', language);
     notifyListeners();

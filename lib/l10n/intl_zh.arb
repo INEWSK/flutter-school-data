@@ -39,6 +39,18 @@
     "NA": "N.A.",
     "clickToCall": "點擊以確定撥打電話",
     "clickToBrowse": "點擊前往瀏覽網站",
-    "clickToSearch": "點擊按鈕查找學校",
-    "clickToRetry": "點擊按鈕以嘗試重新加載資料"
+    "clickToSearch": "點擊按鈕以開始搜索",
+    "clickToRetry": "點擊按鈕以嘗試重新加載資料",
+    "retry": "重試",
+    "error": "錯誤",
+    "searchListed": "搜索結果會在此列出",
+    "nothingHere": "你進入了虛空，這里什麼都沒有",
+    "loading": "加載中...",
+    "primarySchool": "小學",
+    "secondarySchool": "中學",
+    "getStart": "開始使用",
+    "backToExit": "再次返回以退出程式",
+    "sortBy": "按分類查看",
+    "warning": "注意",
+    "openGoogleMap": "這將會在地圖顯示當前列表內共 {count} 座學校座標"
 }

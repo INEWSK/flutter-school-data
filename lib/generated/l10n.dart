@@ -450,10 +450,10 @@ class S {
     );
   }
 
-  /// `Press button to search school information`
+  /// `Or press the button to search school information`
   String get clickToSearch {
     return Intl.message(
-      'Press button to search school information',
+      'Or press the button to search school information',
       name: 'clickToSearch',
       desc: '',
       args: [],
@@ -467,6 +467,126 @@ class S {
       name: 'clickToRetry',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Retry`
+  String get retry {
+    return Intl.message(
+      'Retry',
+      name: 'retry',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error`
+  String get error {
+    return Intl.message(
+      'Error',
+      name: 'error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search result will be listed here`
+  String get searchListed {
+    return Intl.message(
+      'Search result will be listed here',
+      name: 'searchListed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Oops... nothing here`
+  String get nothingHere {
+    return Intl.message(
+      'Oops... nothing here',
+      name: 'nothingHere',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Loading...`
+  String get loading {
+    return Intl.message(
+      'Loading...',
+      name: 'loading',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Primary school`
+  String get primarySchool {
+    return Intl.message(
+      'Primary school',
+      name: 'primarySchool',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Secondary school`
+  String get secondarySchool {
+    return Intl.message(
+      'Secondary school',
+      name: 'secondarySchool',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Get Start`
+  String get getStart {
+    return Intl.message(
+      'Get Start',
+      name: 'getStart',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Press back again to exit`
+  String get backToExit {
+    return Intl.message(
+      'Press back again to exit',
+      name: 'backToExit',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sort by`
+  String get sortBy {
+    return Intl.message(
+      'Sort by',
+      name: 'sortBy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Warning`
+  String get warning {
+    return Intl.message(
+      'Warning',
+      name: 'warning',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `That will display the coords of the {count} schools in the list.`
+  String openGoogleMap(Object count) {
+    return Intl.message(
+      'That will display the coords of the $count schools in the list.',
+      name: 'openGoogleMap',
+      desc: '',
+      args: [count],
     );
   }
 }

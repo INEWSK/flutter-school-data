@@ -14,8 +14,8 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   // * prevent device orientation changes and force portrait
   SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitDown,
-    DeviceOrientation.portraitUp,
+    // DeviceOrientation.portraitDown,
+    // DeviceOrientation.portraitUp,
   ]).then((_) async {
     // * init database
     await Hive.initFlutter();
