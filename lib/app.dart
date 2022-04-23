@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
     return Consumer2(
       builder: (_, ThemeProvider provider, IntlProvider intl, __) {
         return MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: 'Hong Kong School Information',
           theme: light(context),
           darkTheme: dark(context),

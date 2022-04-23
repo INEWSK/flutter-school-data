@@ -30,26 +30,24 @@ class _HomePageState extends State<HomePage>
   @override
   bool get wantKeepAlive => true;
 
-  Future _fetchLocalData() async {
+  Future<List<School>> _fetchLocalData() async {
     var hiveUtils = HiveUtils();
     const String boxName = 'school_data';
-    try {
-      log('check is data exist in local');
-      bool exist = await hiveUtils.isExists(boxName: boxName);
-      if (exist) {
-        log('data is exist, loading data from local database');
-        List list = await hiveUtils.getBoxes<School>(boxName);
-        // * remove first item
-        list.removeAt(0);
-        return list;
-      }
-    } catch (e) {
-      // * no local data and no network, return error
-      return Future.error('No data in local, try to refresh data from network');
+
+    log('try to loading data from local database');
+    bool exist = await hiveUtils.isExists(boxName: boxName);
+
+    if (exist) {
+      List<School> list = await hiveUtils.getBoxes<School>(boxName);
+      // * remove first item
+      list.removeAt(0);
+      return list;
+    } else {
+      return Future.error('No data in local');
     }
   }
 
-  Future _fetchAPIData() async {
+  Future<List<School>> _fetchAPIData() async {
     const path = 'assets/json/SCH_LOC_EDB.json';
     const url =
         'https://www.edb.gov.hk/attachment/en/student-parents/sch-info/sch-search/sch-location-info/SCH_LOC_EDB.json';
@@ -78,7 +76,7 @@ class _HomePageState extends State<HomePage>
       // * store new data into box (database);
       await hiveUtils.addBoxes(data, boxName);
       // * pickup data from box
-      List list = await hiveUtils.getBoxes<School>(boxName);
+      List<School> list = await hiveUtils.getBoxes<School>(boxName);
       // * remove first item
       list.removeAt(0);
       return list;
@@ -89,7 +87,7 @@ class _HomePageState extends State<HomePage>
   }
 
   // * method of fetch data
-  Future _fetchData() async {
+  Future<List<School>> _fetchData() async {
     // * for demo to display loading animation
     // TODO remove it before build app
     // await Future.delayed(const Duration(seconds: 3));
@@ -97,11 +95,9 @@ class _HomePageState extends State<HomePage>
     // * check connect status
     var connect = await (Connectivity().checkConnectivity());
     // * if no network, try get data from local database
-    if (connect == ConnectivityResult.none) {
-      return _fetchLocalData();
-    }
-    // * fetch data from API
-    return _fetchAPIData();
+    return connect == ConnectivityResult.none
+        ? _fetchLocalData()
+        : _fetchAPIData();
   }
 
   // * build home page body
@@ -162,23 +158,6 @@ class _HomePageState extends State<HomePage>
         )
       ],
       header: DeliveryHeader(),
-      // child: ListView.builder(
-      //   itemCount: data.length,
-      //   itemBuilder: ((context, index) {
-      //     // * list view animation config
-      //     return AnimationConfiguration.staggeredList(
-      //       position: index,
-      //       duration: const Duration(milliseconds: 375),
-      //       child: SlideAnimation(
-      //         verticalOffset: 50.0,
-      //         child: FadeInAnimation(
-      //           // * list item
-      //           child: _listItem(data, index),
-      //         ),
-      //       ),
-      //     );
-      //   }),
-      // ),
       // * pull to refresh
       onRefresh: () async {
         setState(() {});

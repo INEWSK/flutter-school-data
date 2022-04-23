@@ -24,23 +24,16 @@ class _SearchPageState extends State<SearchPage>
   @override
   bool get wantKeepAlive => true;
 
-  List<School> _data = [];
-
   // * get data from box (local database)
-  Future _getData() async {
+  Future<List<School>> _getData() async {
+    var hiveUtils = HiveUtils();
     // * for demo to display loading animation
     // TODO remove it before release apk
     // await Future.delayed(const Duration(seconds: 3));
 
-    var hiveUtils = HiveUtils();
-
     try {
       List<School> data = await hiveUtils.getBoxes<School>('school_data');
-      if (data.isNotEmpty) {
-        _data = data;
-        return true;
-      }
-      return Future.error('Data is empty');
+      return data;
     } catch (e) {
       log(e.toString());
       return Future.error("Unable to get data from Hive");
@@ -52,114 +45,133 @@ class _SearchPageState extends State<SearchPage>
     super.build(context);
     return Scaffold(
       // appBar: AppBar(),
-      body: _pageContent(),
+      body: _body(),
     );
   }
 
-  Widget _pageContent() {
+  Widget _body() {
     return FutureBuilder(
       future: _getData(),
       builder: (context, snapshot) {
         Widget widget;
         if (snapshot.hasData) {
-          widget = Column(
-            children: [
-              SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20.0),
-                  child: Center(
-                    child: Text(
-                      S.of(context).sortBy,
-                      style: DefaultTextStyle.of(context)
-                          .style
-                          .apply(fontSizeFactor: 1.5),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _categoryCard(
-                        title: S.of(context).primarySchool,
-                        query: "PRIMARY",
-                      ),
-                    ),
-                    Expanded(
-                      child: _categoryCard(
-                        title: S.of(context).secondarySchool,
-                        query: "SECONDARY",
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Flexible(
-                child: Center(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(S.of(context).clickToSearch),
-                        const SizedBox(height: 50),
-                        AspectRatio(
-                            aspectRatio: 1.5,
-                            child: SvgPicture.asset(
-                                'assets/svg/undraw_location_search.svg')),
-                        const SizedBox(height: 50),
-                        ElevatedButton.icon(
-                          onPressed: () => showSearch(
-                            context: context,
-                            delegate: SearchBar(data: _data),
-                          ),
-                          icon: const Icon(Icons.search),
-                          label: Text(S.of(context).search),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          );
+          final data = snapshot.data as List<School>;
+          widget = _searchBody(data);
         } else if (snapshot.hasError) {
-          widget = Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(S.of(context).clickToRetry),
-              const SizedBox(height: 50),
-              AspectRatio(
-                  aspectRatio: 1.5,
-                  child: SvgPicture.asset('assets/svg/undraw_404.svg')),
-              const SizedBox(height: 50),
-              ElevatedButton.icon(
-                onPressed: () => setState(() {
-                  _getData();
-                }),
-                icon: const Icon(Icons.refresh),
-                label: Text(S.of(context).retry),
-              ),
-            ],
-          );
+          widget = _errorPage();
           Toast.show(snapshot.data.toString());
         } else {
-          widget = Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SpinKitChasingDots(color: Colors.blueAccent),
-              const SizedBox(height: 50),
-              Text(S.of(context).loading),
-            ],
-          );
+          widget = _loading();
         }
         return widget;
       },
     );
   }
 
-  Widget _categoryCard({required String title, required String query}) {
+  Widget _loading() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const SpinKitChasingDots(color: Colors.blueAccent),
+        const SizedBox(height: 50),
+        Text(S.of(context).loading),
+      ],
+    );
+  }
+
+  Widget _errorPage() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(S.of(context).clickToRetry),
+        const SizedBox(height: 50),
+        AspectRatio(
+            aspectRatio: 1.5,
+            child: SvgPicture.asset('assets/svg/undraw_404.svg')),
+        const SizedBox(height: 50),
+        ElevatedButton.icon(
+          onPressed: () => setState(() {
+            _getData();
+          }),
+          icon: const Icon(Icons.refresh),
+          label: Text(S.of(context).retry),
+        ),
+      ],
+    );
+  }
+
+  Widget _searchBody(List<School> data) {
+    return Column(
+      children: [
+        SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20.0),
+            child: Center(
+              child: Text(
+                S.of(context).sortBy,
+                style: DefaultTextStyle.of(context)
+                    .style
+                    .apply(fontSizeFactor: 1.5),
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: _categoryCard(
+                  title: S.of(context).primarySchool,
+                  query: "PRIMARY",
+                  data: data,
+                ),
+              ),
+              Expanded(
+                child: _categoryCard(
+                  title: S.of(context).secondarySchool,
+                  query: "SECONDARY",
+                  data: data,
+                ),
+              )
+            ],
+          ),
+        ),
+        Flexible(
+          child: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(S.of(context).clickToSearch),
+                  const SizedBox(height: 50),
+                  AspectRatio(
+                      aspectRatio: 1.5,
+                      child: SvgPicture.asset(
+                          'assets/svg/undraw_location_search.svg')),
+                  const SizedBox(height: 50),
+                  ElevatedButton.icon(
+                    onPressed: () => showSearch(
+                      context: context,
+                      delegate: SearchBar(data: data),
+                    ),
+                    icon: const Icon(Icons.search),
+                    label: Text(S.of(context).search),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _categoryCard({
+    required String title,
+    required String query,
+    required List<School> data,
+  }) {
     return Card(
       elevation: 0,
       child: Column(
@@ -177,7 +189,7 @@ class _SearchPageState extends State<SearchPage>
               MaterialPageRoute(
                 builder: ((context) => FilterPage(
                     title: title,
-                    data: _data
+                    data: data
                         .where((element) => element.x!.contains(query))
                         .toList())),
               ),
